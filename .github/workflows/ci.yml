@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-test-publish:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore Wochenplanung.sln
+
+      - name: Build
+        run: dotnet build Wochenplanung.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test Wochenplanung.sln --configuration Release --no-build
+
+      - name: Publish artifact
+        run: dotnet publish Wochenplanung.Presentation/Wochenplanung.Presentation.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish_ci
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Meisterfenster-win-x64
+          path: publish_ci
