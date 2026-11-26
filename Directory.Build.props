@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <MeisterfensterVersion>2.0.0</MeisterfensterVersion>
+    <MicrosoftExtensionsVersion>8.0.1</MicrosoftExtensionsVersion>
+    <EntityFrameworkVersion>8.0.22</EntityFrameworkVersion>
+  </PropertyGroup>
+</Project>

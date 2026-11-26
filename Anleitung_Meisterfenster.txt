@@ -1,0 +1,719 @@
+================================================================================
+                    MEISTERFENSTER - ANLEITUNG
+                    Wochenplanung fuer Mitarbeiter
+                         Version 2.0.0
+================================================================================
+
+
+1. START / WEITERGABE
+================================================================================
+
+  WICHTIG fuer andere PCs – eine der drei Varianten:
+  - Installer: Meisterfenster_Setup.exe  (legt Startmenue/Desktop-Verknuepfung an)
+  - ZIP: "Meisterfenster-Weitergabe.zip" auf DEN PC entpacken
+    (Desktop oder C:\Meisterfenster), nicht nur die EXE allein.
+  - Oder den KOMPLETTEN Inhalt des Ordners "publish" lokal hinlegen.
+
+  NICHT die EXE direkt von einer Server-Freigabe starten
+  (\\SERVER\... oder Netzlaufwerk). Dann bleibt oft nur der Windows-
+  Ladekreis, und es kommt kein Fenster. Das Programm selbst startet
+  dann nicht - es haengt schon beim Entpacken auf dem Netz.
+
+  Wenn der Ordner trotzdem auf dem Server liegt:
+  auf dem Kollegen-PC "Meisterfenster-Starten.bat" doppelklicken.
+  Die BAT kopiert zuerst auf den PC und startet erst dann.
+
+  Start ueber: Wochenplanung.Presentation.exe
+  (nach dem Installer auch ueber die Verknuepfung "Meisterfenster 2",
+   nach der BAT unter %LOCALAPPDATA%\Meisterfenster\app\)
+  Laeuft auf Windows 10/11 (64-Bit), keine separate .NET-Installation noetig.
+
+  Beim ersten Start werden Daten automatisch angelegt unter:
+  C:\Users\[Benutzername]\AppData\Local\Meisterfenster\
+  (getrennt von der alten 1.4.x-Installation)
+
+
+2. OBERFLAECHE
+================================================================================
+
+  Das Hauptfenster besteht aus:
+
+  OBEN:
+  - Hamburger-Menue links oben (drei Striche)
+  - Titel in der Mitte (wird bei wenig Platz abgeschnitten)
+  - Navigation rechts neben dem Titel: Vorherige Woche, Heute,
+    Naechste Woche, Datumsfeld, Tag / Woche / Monat
+  - Rechts: Status "Lokal" oder "Server: ...", im Server-Modus zusaetzlich
+    der Button "Aktualisieren" (F5)
+  - Toolbar-Karten darunter: Mitarbeiter / Aufgaben / Export
+
+  LINKS:
+  - Standard-Aufgaben (Vorlagen)
+  - Breite per Trennbalken veraenderbar (bleibt nach dem Schliessen erhalten)
+
+  RECHTS:
+  - Plan-Tabelle (Zeilen = Mitarbeiter, Spalten = Tage)
+  - Gleiche Taetigkeiten stehen ueber die Woche auf gleicher Hoehe
+    (auch wenn der Text an einem Tag umbricht)
+  - Kopieren- und Verlaengern-Icons sind fest auf der Karte,
+    die Zeile waechst beim Darueberfahren nicht mehr
+
+
+3. HAMBURGER-MENUE (OPTIONEN)
+================================================================================
+
+  Im Hamburger-Menue kannst du:
+
+  - Buttons der Hauptansicht ein-/ausblenden
+    (Navigation, Heute, Tag/Woche/Monat, Excel/PDF/Drucken, Sicherung,
+     Wiederherstellen, Woche kopieren, Statistik, Ferien, Mitarbeiter,
+     Aufgaben, Undo/Redo, Feiertag, Ferien eintragen, Import, Filter)
+    Ausgeblendete Buttons bleiben nach dem Schliessen gespeichert.
+  - Theme wechseln: Dark / Light  (sofort, ohne Neustart)
+  - Sprache wechseln: Deutsch, Englisch, Franzoesisch, Italienisch
+    Danach App neu starten, damit alle Dialoge vollstaendig umgestellt sind.
+  - Datenbank / Server: "Dieser PC (lokal, nur ich)" oder
+    "SQL Server (gemeinsam im Buero)"
+  - Nur Server-Modus: Haken "Plan automatisch aktualisieren"
+    (alle 90 Sekunden vom Server neu laden, Standard: an)
+
+  Hinweis:
+  - Theme und ausgeblendete Buttons wirken sofort.
+  - Escape schliesst das Hamburger-Menue.
+
+
+4. ANSICHTEN UND NAVIGATION
+================================================================================
+
+  Ansichten:
+  - Tag
+  - Woche
+  - Monat: die Tage haben eine Mindestbreite und lassen sich waagrecht
+    scrollen, damit 31 Spalten lesbar bleiben
+
+  Navigation:
+  - Vorherige Woche steht direkt links neben Heute, danach Naechste Woche
+  - Heute: springt zum heutigen Tag / zur aktuellen Woche / zum aktuellen Monat
+    (je nach aktiver Ansicht)
+  - Zurueck / Weiter und "Aktueller Tag" / "Aktueller Monat": je nach Ansicht
+  - Datumsfeld: Kalender zum direkten Springen auf ein Datum
+    (Monatblaettern, Jahr waehlen, Heute im Kalender)
+
+  Auswahl in der Plan-Tabelle:
+  - Der heutige Tag ist in der ganzen Spalte hellrot hinterlegt
+  - Klick auf leere Zelle: Zelle markieren
+  - Klick auf Spaltenkopf (Tag): ganze Spalte hervorheben
+  - Klick auf Mitarbeiternamen: ganze Zeile hervorheben
+  - Klick ins Leere: Auswahl aufheben
+
+
+5. MITARBEITER
+================================================================================
+
+  + Mitarbeiter:
+  - neuen Mitarbeiter anlegen
+  - optionale Mitarbeiter-Nr. und Rolle verfuegbar
+
+  Mitarbeiter bearbeiten / loeschen:
+  - zuerst Mitarbeiter in der Tabelle auswaehlen
+
+  Reihenfolge:
+  - per Griff (≡) links am Namen ziehen (Drag & Drop) – bleibt nach Neustart
+  - Klick auf den Spaltenkopf "Mitarbeiter": Sortierung nach Nummer, dann Name,
+    zurueck zur manuellen Reihenfolge
+
+
+6. AUFGABEN
+================================================================================
+
+  + Aufgabe:
+  - neue Aufgabe fuer Mitarbeiter anlegen
+  - Felder: Beschreibung, Datum, Typ, Farbe, Zeit, Ort, Projekt, Notiz
+  - Farben auf Deutsch (Gelb, Gruen, Blau, Beige, Orange, Rot)
+  - Startzeit: 10:00, 10.00 oder 1000 (wird als 10:00 verstanden)
+  - Typen: Arbeit, Ferien, Abwesenheit, Fortbildung, Sonstiges
+  - mehrtaegige Aufgaben moeglich
+  - wiederkehrende Aufgaben: Keine / woechentlich / monatlich
+  - unten im Dialog: wer die Aufgabe zuletzt geaendert hat (Name/PC und Zeit)
+  - Doppelklick auf eine leere Zelle oeffnet dasselbe Fenster
+    (Mitarbeiter und Tag sind schon gesetzt)
+
+  Duplikat-Schutz:
+  - Gleiche Beschreibung fuer denselben Mitarbeiter am selben Tag
+    ist nicht erlaubt (Hinweis-Dialog erscheint).
+
+  Aufgabe bearbeiten / loeschen:
+  - Aufgabe anklicken, dann Button, Doppelklick oder Kontextmenue nutzen
+  - Rechtsklick: Bearbeiten, Loeschen, Kopieren, Zu Favoriten hinzufuegen
+
+  Direkt im Plan:
+  - Aufgabe per Drag & Drop auf anderen Tag verschieben (auch rueckwaerts)
+  - Verlaengern/Verkuerzen ueber Greifpunkt am ERSTEN oder LETZTEN Tag
+  - Mehrtages-Teile mit Ctrl+Klick markieren
+  - Delete/Backspace loescht markierte Tage; Enter bestaetigt im Dialog
+
+
+7. STANDARD-AUFGABEN (VORLAGEN)
+================================================================================
+
+  Vorlagen links in der Sidebar (z. B. Schule, Ferien, Krank ...).
+
+  Zuweisung:
+  - per Drag & Drop auf eine Tageszelle
+  - per Drag ueber mehrere Tage (Mehrfachzuweisung)
+  - Doppelklick auf eine Vorlage: Aufgabenfenster mit dieser Beschreibung
+  - per Rechtsklick auf Tageszelle: modernes Menue mit Farbpunkten
+
+  Mehrfachauswahl:
+  - Klick markiert die Vorlage (Rahmen)
+  - Shift oder Ctrl + Klick auf mehrere Vorlagen
+  - gemeinsam auf Plan ziehen
+
+  Favoriten:
+  - Stern (☆/★) an der Vorlage antippen
+  - oder Rechtsklick auf eine Aufgabe im Plan: "Zu Favoriten hinzufuegen"
+  - Favoriten erscheinen oben in der Liste
+
+  Verwalten:
+  - + Vorlage
+  - "Bearbeiten" / Loeschen
+  - Im Server-Modus: Button "Aktualisieren" oder Auto-Reload holt Vorlagen
+    der anderen PCs nach
+
+  Speicherung:
+  - Lokal: %LOCALAPPDATA%\Wochenplanung\task_templates.json
+    (zusaetzlich in der lokalen Datenbank)
+  - Server-Modus: Vorlagen liegen in der gemeinsamen SQL-Datenbank.
+    Die JSON-Datei ist nur eine lokale Notkopie, nicht der gemeinsame Stand.
+
+
+8. KOPIEREN / EINFUEGEN VON AUFGABEN
+================================================================================
+
+  Moeglichkeiten:
+  - Ctrl + C auf ausgewaehlter Aufgabe
+  - Kontextmenue "Kopieren" (Rechtsklick auf Aufgabe)
+  - Drag-Copy ueber Kopier-Icon der Task-Card
+
+  Einfuegen:
+  - Rechtsklick in Zielzelle -> "Kopierte Aufgabe hier einfuegen"
+  - oder Ctrl + V
+  - Nach dem Einfuegen wird die Kopie geleert (nur einmal einfuegbar)
+
+  Bei mehrtaegigen Aufgaben:
+  - Wenn Tage mit Ctrl+Klick markiert wurden, werden nur diese Teile kopiert
+
+
+9. KONTEXTMENUE (RECHTSKLICK)
+================================================================================
+
+  Auf leere Zelle:
+  - Liste aller Vorlagen mit Farbpunkt
+  - "Kopierte Aufgabe hier einfuegen" (wenn zuvor kopiert)
+
+  Auf Aufgabe:
+  - Bearbeiten (Stift-Icon)
+  - Loeschen (Papierkorb-Icon)
+  - Kopieren (Kopier-Icon)
+
+
+10. FILTER
+================================================================================
+
+  Die Filterleiste ist ein-/ausklappbar und im Hamburger-Menue ganz
+  ausblendbar (bleibt gespeichert).
+
+  Filter:
+  - Suchtext
+  - Mitarbeiter
+  - Aufgabentyp
+  - Filter zuruecksetzen
+
+
+11. EXPORT, DRUCKEN, SICHERUNG
+================================================================================
+
+  Excel-Export:
+  - Button "Excel"
+  - Zeitraum (Von/Bis) waehlen
+  - Schriftgroesse waehlen
+  - Datei speichern
+  - Kopfzeile mit Mo-So bleibt beim Runterscrollen sichtbar
+
+  PDF-Export:
+  - Button "PDF"
+  - Zeitraum + Schriftgroesse waehlen
+  - Bei laengeren Zeitraeumen automatische Aufteilung in Wochen-Seiten
+  - Wochentage stehen oben auf jeder Seite (PDF kann Zeilen nicht festklemmen)
+
+  Aktuelle Ansicht drucken:
+  - Button "Drucken" oeffnet eine Vorschau (links Einstellungen, rechts Bild)
+  - Drucker, Ausrichtung, Kopien, Farbmodus, "Weitere Einstellungen"
+  - Von dort aus drucken (die gerade sichtbare Tag-/Wochen-/Monatsansicht)
+
+  CSV/Excel Import:
+  - Button "CSV/Excel Import" – vorhandene Listen einlesen
+    (Spalten zuordnen, dann importieren)
+
+  Sicherungskopie:
+  - Lokal: Button "Sicherung" speichert eine Kopie von schedule.db
+    (und falls vorhanden die Vorlagen-JSON) z. B. unter
+    Dokumente\Wochenplan_Backups. Vorgeschlagener Name:
+    Wochenplan_Backup_JJJJ-MM-TT_HHMM.db
+    "Wiederherstellen" ersetzt die lokale schedule.db durch so eine Datei
+    und startet die App neu.
+  - Server-Modus: Die gemeinsamen Daten liegen auf SQL Server. Eine echte
+    Sicherung macht ihr in SSMS (Datenbank "Wochenplanung").
+    Der Button "Sicherung" fragt zuerst nach und speichert dann nur die
+    lokale Datei dieses PCs – das ist nicht der Server-Stand.
+    Wenn es keine lokale schedule.db gibt, gibt es nichts zu speichern.
+    "Wiederherstellen" ist im Server-Modus nicht in der Leiste und nicht
+    vorgesehen (betrifft nur SQLite, nicht SQL Server).
+
+
+12. FEIERTAGE, FERIEN, STATISTIK, WOCHE KOPIEREN
+================================================================================
+
+  Feiertag (Button "Feiertag"):
+  - eigener Tag oder Zeitraum fuer alle Mitarbeiter
+    (wird als Abwesenheit eingetragen)
+  - oder Schweizer Feiertage fuer ein Jahr ankreuzen
+    (Jahr: Vorjahr bis +10 Jahre)
+    Buttons: "Nur eidgenoessische", "Solothurn", "Alle anwaehlen"
+    (erneuter Klick hebt die Auswahl wieder auf)
+  - Kanton Solothurn zusaetzlich z. B. Berchtoldstag, Fronleichnam,
+    Mariae Himmelfahrt, Allerheiligen, Mariae Empfaengnis, Stephanstag
+    (kantonal mit "(SO)" gekennzeichnet)
+
+  Betriebsferien (Button "Ferien eintragen"):
+  - Zeitraum fuer alle Mitarbeiter auf einmal
+  - wird als Ferien eingetragen (nicht als Abwesenheit)
+
+  Ferien-Auswertung (Button "Ferien"):
+  - Ferien, Abwesenheit und Fortbildung pro Mitarbeiter
+  - Jahr waehlen oder eigenen Zeitraum
+  - Summe der Tage unten
+
+  Statistik (Button "Statistik"):
+  - Arbeitstage und geschaetzte Stunden je Mitarbeiter im Zeitraum
+    (Vorschlag folgt der aktuellen Tag-/Wochen-/Monatsansicht)
+  - Hinterlegte Zeiten, sonst 8 Stunden pro Arbeitstag
+  - Ferien, Abwesenheit und Fortbildung zaehlen nicht
+
+  Woche kopieren:
+  - nur in der Wochenansicht
+  - aktuelle Woche in eine Zielwoche kopieren (Datum waehlen)
+
+
+13. MODERNE DIALOGE
+================================================================================
+
+  Die Anwendung nutzt moderne Dialogfenster (statt alter Standard-MessageBoxen),
+  abgestimmt auf Light/Dark Theme.
+  Loeschen kann mit Enter bestaetigt werden.
+
+
+14. UNDO / REDO
+================================================================================
+
+  Rueckgaengig/Wiederholen fuer Plan-Aktionen wie:
+  - Anlegen
+  - Bearbeiten
+  - Loeschen
+  - Verschieben/Kopieren
+  - Verlaengern/Verkuerzen
+
+
+15. TASTENKUERZEL
+================================================================================
+
+  Ctrl + N         Neue Aufgabe
+  Ctrl + E         Neuer Mitarbeiter
+  Ctrl + C         Aufgabe kopieren
+  Ctrl + V         Aufgabe einfuegen
+  Ctrl + Z         Undo
+  Ctrl + Y         Redo
+  Delete/Backspace Markierte Aufgabe/Tage loeschen
+  Enter            Loeschen im Dialog bestaetigen
+  F5               Plan neu laden (im Server-Modus auch Button "Aktualisieren")
+  Escape           Hamburger-Menue schliessen
+  Doppelklick      Aufgabe bearbeiten; leere Zelle oder Vorlage:
+                   Aufgabenfenster oeffnen
+
+
+16. DATENSPEICHERUNG
+================================================================================
+
+  Speicherort:
+  C:\Users\[Benutzername]\AppData\Local\Wochenplanung\
+
+  Typische Dateien:
+  - schedule.db           lokale Datenbank (SQLite)
+  - task_templates.json   Standard-Aufgaben (lokal / Notkopie)
+  - database.json         Server/Lokal-Einstellung (SQL-Passwort verschluesselt)
+  - ui_layout.json        Button-Sichtbarkeit und Vorlagen-Breite
+  - language.txt          Sprache
+  - dark_mode.txt         Dark/Light
+  - logs\startup.log      Start und SQL-Fehler (auch ohne Fenster)
+  - logs\app-JJJJMMTT.log Tagesprotokoll (ca. 14 Tage)
+
+  Tipp:
+  - In der Windows-Adresszeile eingeben:
+    %localappdata%\Wochenplanung
+    %localappdata%\Wochenplanung\logs
+
+
+17. BUERO-SERVER (SQL SERVER EXPRESS) - GENAUE ANLEITUNG
+================================================================================
+
+  Ziel:
+  Alle Buero-PCs arbeiten mit DEMSELBEN Plan. Nicht die EXE auf eine
+  Freigabe legen, sondern SQL Server auf einem immer eingeschalteten
+  Buero-PC / Server installieren.
+
+  Lokale Daten bleiben auf jedem PC. Der Server startet leer, bis dort
+  Mitarbeiter und Aufgaben erfasst sind.
+
+
+  TEIL A - AUF DEM BUERO-PC / SERVER INSTALLIEREN
+  ------------------------------------------------------------------------------
+
+  1) Welcher PC?
+     - Ein PC, der tagsueber immer laeuft (Buero-Rechner oder Windows-Server).
+     - Merke den Computernamen:
+       Einstellungen > System > Info > Geraetename
+       Beispiel: BUEROSERVER
+     - Alle anderen PCs muessen diesen PC im Netzwerk erreichen
+       (gleiches WLAN / LAN).
+
+  2) SQL Server Express herunterladen
+     - Im Browser oeffnen:
+       https://www.microsoft.com/de-de/sql-server/sql-server-downloads
+     - Bei "Express" auf "Jetzt herunterladen" klicken.
+     - Die Datei (z. B. SQL2022-SSEI-Expr.exe) starten.
+
+  3) Installation
+     - "Basic" reicht fuer den Anfang.
+     - Lizenz akzeptieren, Installationsordner belassen, Installieren.
+     - Warten, bis "Installation erfolgreich" erscheint.
+     - "Connect now" / Verbindungstest darf gruen sein.
+     - Instanzname ist normalerweise: SQLEXPRESS
+
+  4) SQL Server Management Studio (SSMS) installieren
+     - Ebenfalls von der Microsoft-Seite: "SSMS herunterladen"
+       oder direkt:
+       https://aka.ms/ssmsfullsetup
+     - SSMS ist das Fenster, mit dem man den Server prueft.
+     - Nach der Installation SSMS oeffnen.
+     - Servername: .\SQLEXPRESS   (Punkt = dieser PC)
+     - Authentifizierung: Windows-Authentifizierung
+     - Verbinden.
+
+  5) Optional, aber empfohlen: TCP/IP einschalten
+     (noetig, wenn ANDERE PCs zugreifen sollen)
+     WICHTIG: Das ist NICHT in SSMS. Eigenes Windows-Programm.
+
+     Oeffnen - einer dieser Wege:
+     - Windows-Taste, dann eintippen:  SQLServerManager16.msc
+       Enter. (Bei SQL Server 2019: SQLServerManager15.msc)
+     - Oder: Windows-Taste + R, denselben Namen eintragen, OK.
+     - Oder Startmenue: Microsoft SQL Server 2022
+       > SQL Server 2022-Konfigurations-Manager
+
+     Im Fenster links:
+     - "SQL Server-Netzwerkkonfiguration"
+       aufklappen > "Protokolle fuer SQLEXPRESS"
+     - Rechts bei TCP/IP: Rechtsklick > Aktivieren
+       (steht danach "Aktiviert" / "Ja")
+     - TCP/IP doppelklicken > Reiter "IP-Adressen"
+       ganz nach UNTEN scrollen, Abschnitt "IPAll":
+         TCP Dynamic Ports  =  leer (nichts drin)
+         TCP-Port           =  1433
+     - OK. Meldung zum Neustart mit OK bestaetigen.
+
+     Links: "SQL Server-Dienste"
+     - SQL Server (SQLEXPRESS): Rechtsklick > Neu starten
+     - SQL Server-Browser:
+         Rechtsklick > Eigenschaften > Startmodus: Automatisch > OK
+         dann Rechtsklick > Starten
+         (Status muss "Wird ausgefuehrt" sein)
+
+  6) Windows-Firewall auf DEM SERVER oeffnen
+     Auch das ist NICHT in SSMS.
+
+     Oeffnen:
+     - Windows-Taste + R, eintippen:  wf.msc    dann Enter
+     - Oder: Windows-Taste, "Windows Defender Firewall" suchen
+       > "Erweiterte Einstellungen"
+
+     Links: "Eingehende Regeln"
+     Rechts: "Neue Regel..."
+       a) Regeltyp Port > Weiter
+          TCP, bestimmte lokale Ports: 1433 > Weiter
+          Verbindung zulassen > Weiter > alle Haken > Weiter
+          Name: SQL Server 1433 > Fertig stellen
+       b) Nochmals "Neue Regel..."
+          Port > UDP, bestimmte lokale Ports: 1434
+          Name: SQL Browser 1434 > Fertig stellen
+
+
+  TEIL B - ANMELDUNG (IN SSMS, LINKE LEISTE = OBJEKT-EXPLORER)
+  ------------------------------------------------------------------------------
+
+  Zuerst entscheiden:
+  - Nur DIESER eine PC testet? Windows-Anmeldung reicht, Teil B ueberspringen.
+  - Andere Buero-PCs sollen mitarbeiten, KEINE Firmen-Domaene?
+    Dann Variante 2 (SQL-Benutzer). Das ist der Normalfall im Kleinbetrieb.
+  - Alle PCs in derselben Windows-Domaene? Variante 1.
+
+
+  Variante 1 - Windows-Anmeldung (nur mit Firmen-Domaene)
+     1. SSMS, links den Server ganz oben anklicken
+        (z. B. FANKI\SQLEXPRESS).
+     2. Ordner "Sicherheit" aufklappen (unter dem Server, nicht in den
+        Eigenschaften).
+     3. "Anmeldungen" rechtsklicken > "Neue Anmeldung..."
+     4. "Windows-Authentifizierung" waehlen.
+     5. "Suchen..." > den Windows-Benutzer oder die Gruppe eintragen
+        (z. B. BUERO\Werkstatt) > OK.
+     6. Links "Serverrollen": Haken bei "dbcreator".
+     7. OK.
+     In Meisterfenster: Haken "Windows-Anmeldung" lassen.
+
+
+  Variante 2 - SQL-Benutzer (Kleinbetrieb / Arbeitsgruppe)
+     Schritt 1: Gemischte Anmeldung einschalten
+     - Links ganz oben den Server rechtsklicken
+       (Name wie FANKI\SQLEXPRESS oder .\SQLEXPRESS).
+     - "Eigenschaften"
+     - Links die Seite "Sicherheit" anklicken.
+     - Bei "Serverauthentifizierung" waehlen:
+       "SQL Server- und Windows-Authentifizierungsmodus"
+     - OK.
+     - Meldung zum Neustart: OK.
+
+     Schritt 2: SQL Server neu starten
+     - Denselben Server oben rechtsklicken > "Neu starten"
+     - Ja / Ja.
+     - Oder im Konfigurations-Manager:
+       SQL Server-Dienste > SQL Server (SQLEXPRESS) > Neu starten.
+     - Danach in SSMS wieder verbinden
+       (Windows-Authentifizierung, .\SQLEXPRESS, Serverzertifikat vertrauen).
+
+     Schritt 3: Benutzer anlegen
+     - Ordner "Sicherheit" aufklappen (unter dem Server).
+     - "Anmeldungen" rechtsklicken > "Neue Anmeldung..."
+     - Anmeldename:  wochenplanung
+     - "SQL Server-Authentifizierung" waehlen
+     - Kennwort und "Kennwort bestaetigen" ausfuellen
+       (Kennwort merken, wird in Meisterfenster gebraucht)
+     - Haken WEG bei:
+         "Benutzer muss das Kennwort bei der naechsten Anmeldung aendern"
+         "Kennwortrichtlinie erzwingen"
+     - Links "Serverrollen": Haken bei "dbcreator"
+       (damit die App die Datenbank Wochenplanung anlegen darf)
+     - OK.
+
+     Schritt 4: In Meisterfenster (☰ > Datenbank / Server)
+     - SQL Server (gemeinsam im Buero)
+     - Server: auf DIESEM PC  .\SQLEXPRESS
+               auf anderen PCs  COMPUTERNAME\SQLEXPRESS
+     - Datenbankname: Wochenplanung
+     - Haken "Windows-Anmeldung" ENTFERNEN
+     - SQL-Benutzer: wochenplanung
+     - Passwort: das eben gesetzte
+       (wird auf diesem PC verschluesselt gespeichert, nicht im Klartext)
+     - Verbindung testen > Speichern
+
+
+  TEIL C - IN MEISTERFENSTER AUF JEDEM PC EINRICHTEN
+  ------------------------------------------------------------------------------
+
+  1) Meisterfenster starten.
+  2) Hamburger-Menue (drei Striche oben links) oeffnen.
+  3) Karte "Datenbank / Server" > Button "Datenbank / Server".
+  4) Waehlen: "SQL Server (gemeinsam im Buero)"
+  5) Server eintragen, Beispiele:
+       BUEROSERVER\SQLEXPRESS
+       BUEROSERVER
+       192.168.1.50\SQLEXPRESS
+     Den echten Computernamen aus Teil A Schritt 1 verwenden.
+  6) Datenbankname: Wochenplanung   (so lassen)
+  7) Anmeldung:
+     - Mit Domaene: Haken "Windows-Anmeldung (empfohlen)" lassen.
+     - Ohne Domaene (Kleinbetrieb): Haken weg, SQL-Benutzer und Passwort
+       wie in Teil B Variante 2.
+  8) Haken "Lokale Daten auf den Server kopieren (Mitarbeiter, Aufgaben,
+     Vorlagen)" nur auf DEM EINEN PC mit den echten Daten setzen.
+     Auf den anderen PCs den Haken wegnehmen.
+  9) "Verbindung testen"
+     - Gruen / erfolgreich: speichern.
+     - "Server erreichbar. Die Datenbank wird beim Start angelegt."
+       ist in Ordnung.
+     - Fehler: Teil D.
+ 10) Speichern. Die App startet neu.
+     Falls der Haken gesetzt war, werden die lokalen Daten jetzt kopiert.
+     Beim ersten Server-Start kann Meisterfenster zusaetzlich nachfragen,
+     ob lokale Daten uebernommen werden sollen. Nur auf einem PC Ja.
+     Die lokale Datei bleibt als Sicherung auf dem PC.
+ 11) Oben sollte stehen:  Server: BUEROSERVER\SQLEXPRESS
+     Button "Aktualisieren" (F5) laedt den Plan vom Server.
+     Im Menue ☰ ist "Plan automatisch aktualisieren" standardmaessig an
+     (alle 90 Sekunden).
+
+  Nur EIN PC soll die lokalen Daten kopieren (der mit den echten Daten).
+  Die anderen PCs nur mit dem Server verbinden, nicht nochmals kopieren.
+
+  Diesen Schritt auf JEDEM Buero-PC gleich machen
+  (gleicher Servername, gleiche Datenbank).
+
+
+  TEIL D - WENN DIE VERBINDUNG FEHLSCHLAEGT
+  ------------------------------------------------------------------------------
+
+  - Server-PC eingeschaltet? Gleiches Netzwerk?
+  - Servername exakt wie in "System > Info"?
+    Backslash nicht vergessen: NAME\SQLEXPRESS
+  - In SSMS auf dem Server selbst mit .\SQLEXPRESS verbinden.
+    Geht das nicht, ist SQL Server nicht fertig installiert.
+  - TCP/IP aktiv und Dienst neu gestartet?
+  - Firewall-Regeln 1433 / 1434 vorhanden?
+  - Vom anderen PC testen:  ping BUEROSERVER
+  - Arbeitsgruppe ohne Domaene: SQL-Benutzer verwenden (Teil B Variante 2),
+    nicht Windows-Anmeldung.
+  - Nur Ladekreis, Fenster kommt nicht:
+    EXE nicht von der Freigabe starten (Abschnitt 1). Sonst: dieser PC
+    erreicht den SQL Server nicht. Nach wenigen Sekunden kommt eine
+    Meldung (ab 1.4.5). Dann Firewall / TCP (Teil A 5+6) pruefen.
+    Auf JEDEM PC denselben Servernamen eintragen (nicht .\SQLEXPRESS
+    am Kollegen-PC). SQL-Passwort dort neu eingeben, database.json
+    nicht von einem anderen Benutzer kopieren.
+  - Fehler "Employees" / "CREATE TABLE" / "permission denied":
+    Der SQL-Server ist erreichbar, aber DER Anmeldename der App hat
+    keine Rechte auf die Datenbank Wochenplanung. In SSMS zaehlt
+    nicht "Rolf sitzt am PC", sondern wer wirklich verbindet.
+    Pruefen, waehrend die Fehlermeldung offen ist:
+
+      SELECT session_id, login_name, original_login_name, host_name, program_name
+      FROM sys.dm_exec_sessions
+      WHERE program_name LIKE N'%SqlClient%'
+      ORDER BY session_id DESC;
+
+    login_name braucht db_owner auf Wochenplanung (wie sven.meister).
+    Eine Windows-Gruppe mit db_owner reicht nur, wenn dieser login_name
+    Mitglied ist. Nach Gruppenaufnahme: Windows ab- und anmelden.
+    sa-Zeilen in der Liste ignorieren.
+  - Fehler "Verschluesselung wurde aktiviert" / "Zertifikatkette nicht
+    vertrauenswuerdig":
+    Im Verbindungsdialog den Haken "Serverzertifikat vertrauen" setzen,
+    dann erneut Verbinden. SQL Server Express hat ein eigenes Zertifikat,
+    das Windows nicht kennt - der Haken ist da normal und noetig.
+    In Meisterfenster ist das bereits eingestellt.
+
+
+  TEIL E - ALLTAG
+  ------------------------------------------------------------------------------
+
+  - Der Server-PC muss laufen, sonst sehen die anderen PCs keine Daten.
+  - "Aktualisieren" oder F5, wenn jemand anders gerade etwas geaendert hat.
+  - Standard: im Menue ☰ "Plan automatisch aktualisieren" (alle 90 Sekunden),
+    wenn zwei PCs gleichzeitig am Server planen. Haken weg, wenn das stoert.
+  - Wenn zwei Personen denselben Eintrag gleichzeitig aendern:
+    Hinweis "Jemand anderes hat denselben Eintrag bereits geaendert",
+    Plan wird neu geladen.
+  - Vorlagen (Standard-Aufgaben) liegen im Server-Modus in der gemeinsamen
+    Datenbank.
+  - Die alte lokale Datei schedule.db bleibt auf dem PC, wird aber nicht
+    mehr als aktiver Plan verwendet, solange SQL Server eingestellt ist.
+    "Sicherung" speichert genau diese lokale Datei – nicht den Server.
+  - Zurueck auf lokal: Hamburger > Datenbank / Server >
+    "Dieser PC (lokal, nur ich)".
+
+
+18. INFOS FUER DIE IT (KURZ)
+================================================================================
+
+  Was ist Meisterfenster?
+  - Windows-Desktopprogramm (WPF, .NET 8, self-contained).
+  - Kein Cloud-Dienst, kein Internet noetig fuer den Betrieb.
+  - Gemeinsame Planung laeuft ueber SQL Server im eigenen Netz.
+
+  Installation
+  - Setup.exe legt die App unter Programme ab (meist Admin-Rechte).
+  - Alternative ohne Admin: ZIP entpacken und starten.
+  - Nutzerdaten liegen nur unter %LOCALAPPDATA%\Wochenplanung
+    (nicht in Programme).
+
+  Datenbank (empfohlen)
+  - SQL Server Express auf einem Buero-PC, der tagsueber laeuft.
+  - Windows-Anmeldung, wenn die PCs in der Firmen-Domaene sind.
+  - Ohne Domaene: eigener SQL-Benutzer, kein sa-Konto.
+  - TCP-Port 1433, SQL Browser 1434 UDP, Firewall nur intern.
+  - App erstellt die Datenbank "Wochenplanung" selbst, wenn der
+    SQL-Benutzer das darf (dbcreator bzw. entsprechende Rechte).
+
+  Sicherheit
+  - SQL-Passwort wird pro Windows-Benutzer mit DPAPI gespeichert,
+    nicht im Klartext.
+  - Verbindung ist verschluesselt. Bei SQL Express ist
+    "Serverzertifikat vertrauen" noetig (eigenes Zertifikat).
+  - Optionaler Update-Check nur gegen GitHub Releases, abschaltbar.
+  - Keine Telemetrie.
+
+  Sicherung
+  - Echte Sicherung der gemeinsamen Daten: SSMS, Datenbank Wochenplanung.
+  - Der Knopf "Sicherung" in der App speichert nur die lokale Datei
+    dieses PCs, nicht den Server.
+
+  Mehrere PCs
+  - Jeder PC verbindet sich auf denselben Server\Instanz und dieselbe DB.
+  - Nur EIN PC darf einmalig lokale Daten auf den Server kopieren.
+  - Plan-Aktualisierung alle 90 Sekunden oder per F5.
+  - EXE lokal installieren oder entpacken, nicht von \\Server starten.
+  - Windows-Gruppe mit db_owner: zusaetzlich den konkreten Anmeldenamen
+    als Datenbankbenutzer anlegen (wie MEISTER-FENSTER\sven.meister),
+    nicht nur die Gruppe. Den Namen liefert die Sitzungsabfrage oben.
+  - Logs auf dem betroffenen PC: %LOCALAPPDATA%\Wochenplanung\logs
+
+
+19. HINWEISE BEI PROBLEMEN
+================================================================================
+
+  - App startet nicht / nur Ladekreis, kein Fenster:
+    EXE nicht von der Freigabe starten. Setup auf diesem PC oder
+    ZIP lokal entpacken. Auf der Freigabe: Meisterfenster-Starten.bat.
+    Log: %LOCALAPPDATA%\Wochenplanung\logs\startup.log
+    Ab 1.4.5 erscheint die Fehlermeldung statt Absturz, wenn der
+    SQL-Server beim Start nicht erreichbar ist.
+  - Export klappt nicht:
+    Schreibrechte im Zielordner pruefen
+  - Anzeige wirkt veraltet:
+    Theme im Hamburger-Menue umschalten oder App neu starten
+  - Sprache nur teilweise umgestellt:
+    App nach dem Sprachwechsel neu starten
+  - Alte Version laeuft noch:
+    App schliessen und neue EXE bzw. neu installiertes Meisterfenster starten
+  - Server-Verbindung:
+    siehe Abschnitt 17, Teil D
+  - Ausgeblendete Buttons fehlen:
+    Hamburger-Menue > Haken wieder setzen (bleibt gespeichert)
+
+
+20. ENTWICKLER / BUILD
+================================================================================
+
+  Release mit Tests, EXE und ZIP erstellen:
+  powershell -ExecutionPolicy Bypass -File installer\build-release.ps1
+
+  Optional Installer (Inno Setup):
+  powershell -ExecutionPolicy Bypass -File installer\build-setup.ps1
+
+  Ergebnis:
+  - publish\Wochenplanung.Presentation.exe
+  - Meisterfenster-Weitergabe.zip
+  - installer\output\Meisterfenster_Setup.exe   (wenn Setup gebaut)
+
+
+================================================================================
+              Meisterfenster v1.4.7 - Stand November 2026
+================================================================================

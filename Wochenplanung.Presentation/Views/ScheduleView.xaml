@@ -1,0 +1,736 @@
+<UserControl x:Class="Wochenplanung.Presentation.Views.ScheduleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Wochenplanung.Presentation.ViewModels"
+             xmlns:converters="clr-namespace:Wochenplanung.Presentation.Converters"
+             xmlns:views="clr-namespace:Wochenplanung.Presentation.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="1200"
+             Focusable="True"
+             PreviewKeyDown="ScheduleView_PreviewKeyDown"
+             Background="{DynamicResource BackgroundBrush}">
+    <UserControl.Resources>
+        <converters:TaskColorConverter x:Key="TaskColorConverter"/>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <converters:FavoriteGroupHeaderConverter x:Key="FavoriteGroupHeaderConverter"/>
+        <Style x:Key="OptionsCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+            <Setter Property="Margin" Value="0,0,8,8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Border x:Name="Chip"
+                                Padding="10,7"
+                                CornerRadius="8"
+                                Background="{DynamicResource HeaderBrush}"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="1">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Border x:Name="Indicator"
+                                        Width="14"
+                                        Height="14"
+                                        CornerRadius="7"
+                                        BorderThickness="1"
+                                        BorderBrush="{DynamicResource BorderBrush}"
+                                        Background="Transparent"
+                                        Margin="0,0,8,0"/>
+                                <ContentPresenter VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chip" Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Chip" Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                                <Setter TargetName="Chip" Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+                                <Setter TargetName="Indicator" Property="Background" Value="White"/>
+                                <Setter TargetName="Indicator" Property="BorderBrush" Value="White"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="OptionsSectionCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource HeaderBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+    </UserControl.Resources>
+    <Grid Margin="12" MinWidth="400">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header-Karte: responsive – Titel hat immer Platz, Buttons scrollen bei wenig Platz -->
+        <Border Grid.Row="0" Background="{DynamicResource SurfaceBrush}" 
+                Padding="16" Margin="0,0,0,12"
+                CornerRadius="12" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.08" Color="Black"/>
+            </Border.Effect>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <Grid Grid.Row="0" MinHeight="40" ClipToBounds="True">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*" MinWidth="80"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button x:Name="HamburgerOptionsButton" Content="☰" Margin="0,0,8,0" Style="{StaticResource SecondaryButtonStyle}" ToolTip="{Binding TxtOptions}"
+                                Click="HamburgerOptionsButton_Click" Width="36"/>
+                    </StackPanel>
+                    
+                    <TextBlock Grid.Column="1" HorizontalAlignment="Stretch" TextAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontSize="{StaticResource FontSizeHeader}" FontWeight="SemiBold"
+                               TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"
+                               Foreground="{DynamicResource TextPrimaryBrush}" Margin="8,0">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="{Binding WeekHeaderText}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CurrentViewMode}" Value="Day">
+                                        <Setter Property="Text">
+                                            <Setter.Value>
+                                                <Binding Path="SelectedDate" StringFormat="{}{0:dddd, dd.MM.yyyy}"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding CurrentViewMode}" Value="Month">
+                                        <Setter Property="Text">
+                                            <Setter.Value>
+                                                <Binding Path="CurrentMonthStart" StringFormat="{}{0:MMMM yyyy}"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    
+                    <ScrollViewer Grid.Column="2" VerticalScrollBarVisibility="Disabled" 
+                                  HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Right">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button Content="{Binding TxtPrevWeek}" Command="{Binding PreviousWeekCommand}" Margin="0,0,6,0" Style="{StaticResource SecondaryButtonStyle}">
+                                <Button.Visibility>
+                                    <MultiBinding Converter="{StaticResource ViewModeAndBoolToVisibilityConverter}" ConverterParameter="Week">
+                                        <Binding Path="CurrentViewMode"/>
+                                        <Binding Path="ShowPrevWeekButton"/>
+                                    </MultiBinding>
+                                </Button.Visibility>
+                            </Button>
+                            <Button Content="{Binding TxtPrevDay}" Command="{Binding PreviousDayCommand}" Margin="0,0,6,0" Style="{StaticResource SecondaryButtonStyle}">
+                                <Button.Visibility>
+                                    <MultiBinding Converter="{StaticResource ViewModeAndBoolToVisibilityConverter}" ConverterParameter="Day">
+                                        <Binding Path="CurrentViewMode"/>
+                                        <Binding Path="ShowPrevDayButton"/>
+                                    </MultiBinding>
+                                </Button.Visibility>
+                            </Button>
+                            <Button Content="{Binding TxtPrevMonth}" Command="{Binding PreviousMonthCommand}" Margin="0,0,6,0" Style="{StaticResource SecondaryButtonStyle}">
+                                <Button.Visibility>
+                                    <MultiBinding Converter="{StaticResource ViewModeAndBoolToVisibilityConverter}" ConverterParameter="Month">
+                                        <Binding Path="CurrentViewMode"/>
+                                        <Binding Path="ShowPrevMonthButton"/>
+                                    </MultiBinding>
+                                </Button.Visibility>
+                            </Button>
+                            <Button Content="{Binding TxtToday}" Command="{Binding GoToTodayCommand}" 
+                                    Margin="0,0,8,0" Style="{StaticResource PrimaryButtonStyle}"
+                                    ToolTip="{Binding TxtTodayTooltip}"
+                                    Visibility="{Binding ShowTodayButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            <Button Content="{Binding TxtNextWeek}" Command="{Binding NextWeekCommand}" Margin="0,0,8,0" Style="{StaticResource SecondaryButtonStyle}">
+                                <Button.Visibility>
+                                    <MultiBinding Converter="{StaticResource ViewModeAndBoolToVisibilityConverter}" ConverterParameter="Week">
+                                        <Binding Path="CurrentViewMode"/>
+                                        <Binding Path="ShowNextWeekButton"/>
+                                    </MultiBinding>
+                                </Button.Visibility>
+                            </Button>
+                            <Button Content="{Binding TxtCurrentDay}" Command="{Binding CurrentDayCommand}" Margin="0,0,4,0" Style="{StaticResource SecondaryButtonStyle}">
+                                <Button.Visibility>
+                                    <MultiBinding Converter="{StaticResource ViewModeAndBoolToVisibilityConverter}" ConverterParameter="Day">
+                                        <Binding Path="CurrentViewMode"/>
+                                        <Binding Path="ShowCurrentDayButton"/>
+                                    </MultiBinding>
+                                </Button.Visibility>
+                            </Button>
+                            <Button Content="{Binding TxtNextDay}" Command="{Binding NextDayCommand}" Margin="0,0,8,0" Style="{StaticResource SecondaryButtonStyle}">
+                                <Button.Visibility>
+                                    <MultiBinding Converter="{StaticResource ViewModeAndBoolToVisibilityConverter}" ConverterParameter="Day">
+                                        <Binding Path="CurrentViewMode"/>
+                                        <Binding Path="ShowNextDayButton"/>
+                                    </MultiBinding>
+                                </Button.Visibility>
+                            </Button>
+                            <Button Content="{Binding TxtCurrentMonth}" Command="{Binding CurrentMonthCommand}" Margin="0,0,4,0" Style="{StaticResource SecondaryButtonStyle}">
+                                <Button.Visibility>
+                                    <MultiBinding Converter="{StaticResource ViewModeAndBoolToVisibilityConverter}" ConverterParameter="Month">
+                                        <Binding Path="CurrentViewMode"/>
+                                        <Binding Path="ShowCurrentMonthButton"/>
+                                    </MultiBinding>
+                                </Button.Visibility>
+                            </Button>
+                            <Button Content="{Binding TxtNextMonth}" Command="{Binding NextMonthCommand}" Margin="0,0,8,0" Style="{StaticResource SecondaryButtonStyle}">
+                                <Button.Visibility>
+                                    <MultiBinding Converter="{StaticResource ViewModeAndBoolToVisibilityConverter}" ConverterParameter="Month">
+                                        <Binding Path="CurrentViewMode"/>
+                                        <Binding Path="ShowNextMonthButton"/>
+                                    </MultiBinding>
+                                </Button.Visibility>
+                            </Button>
+                            <views:ModernDatePicker SelectedDate="{Binding SelectedDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                    DisplayCulture="{Binding SelectedLanguageCode}"
+                                                    TodayLabel="{Binding TxtToday}"
+                                                    Margin="6,0"
+                                                    VerticalAlignment="Center"
+                                                    ToolTip="{Binding TxtDatePickerTooltip}"/>
+                            <Button Content="{Binding TxtRefresh}" Command="{Binding LoadDataCommand}"
+                                    Margin="6,0,0,0" Style="{StaticResource SecondaryButtonStyle}"
+                                    Visibility="{Binding IsServerMode, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    ToolTip="{Binding TxtRefreshTooltip}"/>
+                            <TextBlock Text="{Binding TxtDatabaseStatus}" VerticalAlignment="Center"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="8,0,0,0"/>
+                            <Border Width="1" Background="{DynamicResource BorderBrush}" Margin="8,0" Height="22" VerticalAlignment="Center"/>
+                            <Button Content="{Binding TxtViewDay}" Command="{Binding SwitchToDayViewCommand}" Margin="2"
+                                    Visibility="{Binding ShowViewDayButton, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CurrentViewMode}" Value="Day">
+                                                <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="BorderThickness" Value="0"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Content="{Binding TxtViewWeek}" Command="{Binding SwitchToWeekViewCommand}" Margin="2"
+                                    Visibility="{Binding ShowViewWeekButton, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CurrentViewMode}" Value="Week">
+                                                <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="BorderThickness" Value="0"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Content="{Binding TxtViewMonth}" Command="{Binding SwitchToMonthViewCommand}" Margin="2"
+                                    Visibility="{Binding ShowViewMonthButton, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding CurrentViewMode}" Value="Month">
+                                                <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                                                <Setter Property="Foreground" Value="White"/>
+                                                <Setter Property="BorderThickness" Value="0"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Border Width="1" Background="{DynamicResource BorderBrush}" Margin="8,0" Height="22" VerticalAlignment="Center"/>
+                            <Button Content="Excel" Command="{Binding ExportToExcelCommand}" Margin="0,0,4,0" Style="{StaticResource SecondaryButtonStyle}"
+                                    Visibility="{Binding ShowExcelButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            <Button Content="PDF" Command="{Binding ExportToPdfCommand}" Style="{StaticResource SecondaryButtonStyle}"
+                                    Visibility="{Binding ShowPdfButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            <Button Content="{Binding TxtPrint}" Command="{Binding PrintCommand}" Margin="4,0,0,0" Style="{StaticResource SecondaryButtonStyle}"
+                                    Visibility="{Binding ShowPrintButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+
+                <Popup PlacementTarget="{Binding ElementName=HamburgerOptionsButton}"
+                       Placement="Bottom"
+                       VerticalOffset="8"
+                       DataContext="{Binding ElementName=HamburgerOptionsButton, Path=DataContext}"
+                       StaysOpen="False"
+                       IsOpen="{Binding IsOptionsPanelOpen, Mode=TwoWay}"
+                       AllowsTransparency="True"
+                       PopupAnimation="Fade">
+                    <Border Width="430"
+                            Background="{DynamicResource SurfaceBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="14"
+                            Padding="14">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="22" ShadowDepth="4" Opacity="0.28" Color="Black"/>
+                        </Border.Effect>
+                        <ScrollViewer MaxHeight="420">
+                            <StackPanel>
+                                <TextBlock Text="{Binding TxtOptions}" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,2"/>
+                                <TextBlock Text="{Binding TxtButtons}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,10"/>
+
+                                <Border Style="{StaticResource OptionsSectionCardStyle}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding TxtOptionsButtonsSection}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8"/>
+                                        <WrapPanel>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtPrevNavGroup}" IsChecked="{Binding ShowPrevNavigationButtons}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtToday}" IsChecked="{Binding ShowTodayButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtCurrentNavGroup}" IsChecked="{Binding ShowCurrentNavigationButtons}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtNextNavGroup}" IsChecked="{Binding ShowNextNavigationButtons}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtViewDay}" IsChecked="{Binding ShowViewDayButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtViewWeek}" IsChecked="{Binding ShowViewWeekButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtViewMonth}" IsChecked="{Binding ShowViewMonthButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="Excel" IsChecked="{Binding ShowExcelButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="PDF" IsChecked="{Binding ShowPdfButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtPrint}" IsChecked="{Binding ShowPrintButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtBackup}" IsChecked="{Binding ShowBackupButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtCopyWeek}" IsChecked="{Binding ShowCopyWeekButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtStatistics}" IsChecked="{Binding ShowStatisticsButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtAbsence}" IsChecked="{Binding ShowAbsenceButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtRestore}" IsChecked="{Binding ShowRestoreButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtAddEmployee}" IsChecked="{Binding ShowAddEmployeeButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtEditEmployee}" IsChecked="{Binding ShowEditEmployeeButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtDeleteEmployee}" IsChecked="{Binding ShowDeleteEmployeeButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtAddTask}" IsChecked="{Binding ShowAddTaskButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtEditTask}" IsChecked="{Binding ShowEditTaskButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtDeleteTask}" IsChecked="{Binding ShowDeleteTaskButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtUndo}" IsChecked="{Binding ShowUndoButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtRedo}" IsChecked="{Binding ShowRedoButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtHoliday}" IsChecked="{Binding ShowHolidayButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtCompanyVacation}" IsChecked="{Binding ShowCompanyVacationButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtImport}" IsChecked="{Binding ShowImportButton}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtFilter}" IsChecked="{Binding ShowFilterBar}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtShowWeekend}" IsChecked="{Binding ShowWeekend}"/>
+                                            <CheckBox Style="{StaticResource OptionsCheckBoxStyle}" Content="{Binding TxtShowInactiveEmployees}" IsChecked="{Binding ShowInactiveEmployees}"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Style="{StaticResource OptionsSectionCardStyle}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding TxtOptionsThemeSection}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Content="{Binding TxtThemeDark}" Command="{Binding SetDarkModeCommand}" Margin="0,0,8,0">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsDarkModeEnabled}" Value="True">
+                                                                <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                                                                <Setter Property="Foreground" Value="White"/>
+                                                                <Setter Property="BorderThickness" Value="0"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                            <Button Content="{Binding TxtThemeLight}" Command="{Binding SetLightModeCommand}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsDarkModeEnabled}" Value="False">
+                                                                <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                                                                <Setter Property="Foreground" Value="White"/>
+                                                                <Setter Property="BorderThickness" Value="0"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Style="{StaticResource OptionsSectionCardStyle}" Margin="0,0,0,0">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding TxtOptionsLanguageSection}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Content="DE" Command="{Binding SetLanguageGermanCommand}" Margin="0,0,8,0">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsGermanLanguage}" Value="True">
+                                                                <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                                                                <Setter Property="Foreground" Value="White"/>
+                                                                <Setter Property="BorderThickness" Value="0"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                            <Button Content="EN" Command="{Binding SetLanguageEnglishCommand}" Margin="0,0,8,0">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsEnglishLanguage}" Value="True">
+                                                                <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                                                                <Setter Property="Foreground" Value="White"/>
+                                                                <Setter Property="BorderThickness" Value="0"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                            <Button Content="FR" Command="{Binding SetLanguageFrenchCommand}" Margin="0,0,8,0">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsFrenchLanguage}" Value="True">
+                                                                <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                                                                <Setter Property="Foreground" Value="White"/>
+                                                                <Setter Property="BorderThickness" Value="0"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                            <Button Content="IT" Command="{Binding SetLanguageItalianCommand}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsItalianLanguage}" Value="True">
+                                                                <Setter Property="Background" Value="{DynamicResource PrimaryBrush}"/>
+                                                                <Setter Property="Foreground" Value="White"/>
+                                                                <Setter Property="BorderThickness" Value="0"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Style="{StaticResource OptionsSectionCardStyle}" Margin="0,10,0,0">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding TxtDatabaseSettings}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,6"/>
+                                        <TextBlock Text="{Binding TxtDatabaseStatus}" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,8"/>
+                                        <Button Content="{Binding TxtDatabaseSettings}"
+                                                Command="{Binding OpenDatabaseSettingsCommand}"
+                                                Style="{StaticResource SecondaryButtonStyle}"
+                                                HorizontalAlignment="Left"/>
+                                        <CheckBox Style="{StaticResource OptionsCheckBoxStyle}"
+                                                  Content="{Binding TxtAutoReload}"
+                                                  IsChecked="{Binding IsAutoReloadEnabled}"
+                                                  ToolTip="{Binding TxtAutoReloadHint}"
+                                                  Margin="0,10,0,4"
+                                                  Visibility="{Binding IsServerMode, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                        <TextBlock Text="{Binding TxtAutoReloadHint}"
+                                                   Foreground="{DynamicResource TextSecondaryBrush}"
+                                                   FontSize="11"
+                                                   TextWrapping="Wrap"
+                                                   Visibility="{Binding IsServerMode, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Style="{StaticResource OptionsSectionCardStyle}" Margin="0,10,0,0"
+                                        Visibility="{Binding ShowDemoTools, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding TxtDemoSection}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,0,8"/>
+                                        <Button Content="{Binding TxtSeedDemo}"
+                                                Command="{Binding SeedDemoDataCommand}"
+                                                Style="{StaticResource SecondaryButtonStyle}"
+                                                HorizontalAlignment="Left"
+                                                ToolTip="{Binding TxtSeedDemoTooltip}"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                </Popup>
+                
+                <!-- Toolbar: responsive, kann bei wenig Platz scrollen -->
+                <Border Grid.Row="1" Background="{DynamicResource SurfaceBrush}" CornerRadius="10" 
+                        Padding="8" Margin="0,12,0,0"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                    <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="3" Padding="8,5" Background="{DynamicResource HeaderBrush}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding TxtEmployeesGroup}" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0"/>
+                                    <Button Content="{Binding TxtAddEmployee}" Command="{Binding AddEmployeeCommand}" Margin="2" Style="{StaticResource PrimaryButtonStyle}"
+                                            Visibility="{Binding ShowAddEmployeeButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Button Content="{Binding TxtEditEmployee}" Command="{Binding EditEmployeeCommand}" Margin="2" Style="{StaticResource SecondaryButtonStyle}"
+                                            Visibility="{Binding ShowEditEmployeeButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Button Content="{Binding TxtDeleteEmployee}" Command="{Binding DeleteEmployeeCommand}" Margin="2" Style="{StaticResource SecondaryButtonStyle}"
+                                            Visibility="{Binding ShowDeleteEmployeeButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                </StackPanel>
+                            </Border>
+                            <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="3" Padding="8,5" Background="{DynamicResource HeaderBrush}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding TxtTasksGroup}" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0"/>
+                                    <Button Content="{Binding TxtAddTask}" Command="{Binding AddTaskCommand}" Margin="2" Style="{StaticResource PrimaryButtonStyle}"
+                                            Visibility="{Binding ShowAddTaskButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Button Content="{Binding TxtEditTask}" Command="{Binding EditTaskCommand}" Margin="2" Style="{StaticResource SecondaryButtonStyle}"
+                                            Visibility="{Binding ShowEditTaskButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Button Content="{Binding TxtDeleteTask}" Command="{Binding DeleteTaskCommand}" Margin="2" Style="{StaticResource SecondaryButtonStyle}"
+                                            Visibility="{Binding ShowDeleteTaskButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Button Content="{Binding TxtUndo}" Command="{Binding UndoCommand}" Margin="2" Style="{StaticResource SecondaryButtonStyle}"
+                                            Visibility="{Binding ShowUndoButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Button Content="{Binding TxtRedo}" Command="{Binding RedoCommand}" Margin="2" Style="{StaticResource SecondaryButtonStyle}"
+                                            Visibility="{Binding ShowRedoButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                </StackPanel>
+                            </Border>
+                            <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="8" Margin="3" Padding="8,5" Background="{DynamicResource HeaderBrush}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding TxtExportGroup}" VerticalAlignment="Center" Foreground="{DynamicResource TextSecondaryBrush}" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0"/>
+                                    <Button Content="{Binding TxtHoliday}" Command="{Binding AddHolidayCommand}" Margin="2" Style="{StaticResource SecondaryButtonStyle}" ToolTip="{Binding TxtHolidayTooltip}"
+                                            Visibility="{Binding ShowHolidayButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Button Content="{Binding TxtCompanyVacation}" Command="{Binding AddCompanyVacationCommand}" Margin="2" Style="{StaticResource SecondaryButtonStyle}" ToolTip="{Binding TxtCompanyVacationTooltip}"
+                                            Visibility="{Binding ShowCompanyVacationButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Button Content="{Binding TxtImport}" Command="{Binding ImportFromCsvCommand}" Margin="2" Style="{StaticResource SecondaryButtonStyle}"
+                                            Visibility="{Binding ShowImportButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Button Content="{Binding TxtPrint}" Command="{Binding PrintCommand}" Margin="2" Style="{StaticResource SecondaryButtonStyle}"
+                                            Visibility="{Binding ShowPrintButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Button Content="{Binding TxtBackup}" Command="{Binding BackupCommand}" Margin="2" Style="{StaticResource SecondaryButtonStyle}" ToolTip="{Binding TxtBackupTooltip}"
+                                            Visibility="{Binding ShowBackupButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Button Content="{Binding TxtRestore}" Command="{Binding RestoreCommand}" Margin="2" Style="{StaticResource SecondaryButtonStyle}" ToolTip="{Binding TxtRestoreTooltip}"
+                                            Visibility="{Binding ShowRestoreButtonOnToolbar, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Button Content="{Binding TxtCopyWeek}" Command="{Binding CopyWeekCommand}" Margin="2" Style="{StaticResource SecondaryButtonStyle}"
+                                            Visibility="{Binding ShowCopyWeekButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Button Content="{Binding TxtStatistics}" Command="{Binding ShowStatisticsCommand}" Margin="2" Style="{StaticResource SecondaryButtonStyle}" ToolTip="{Binding TxtStatisticsTooltip}"
+                                            Visibility="{Binding ShowStatisticsButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Button Content="{Binding TxtAbsence}" Command="{Binding ShowAbsenceReportCommand}" Margin="2" Style="{StaticResource SecondaryButtonStyle}" ToolTip="{Binding TxtAbsenceTooltip}"
+                                            Visibility="{Binding ShowAbsenceButton, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    <Button Content="{Binding TxtSearch}" Command="{Binding SearchPlanCommand}" Margin="2" Style="{StaticResource SecondaryButtonStyle}"/>
+                                    <Button Content="{Binding TxtShareWlan}" Command="{Binding TogglePlanShareCommand}" Margin="2" Style="{StaticResource SecondaryButtonStyle}"
+                                            ToolTip="{Binding PlanShareUrl}"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+
+                <TextBlock Grid.Row="3" Text="{Binding TxtReadOnlyBanner}" Foreground="#8A1C1C" FontWeight="SemiBold"
+                           Margin="0,8,0,0" TextWrapping="Wrap"
+                           Visibility="{Binding IsReadOnly, Converter={StaticResource BoolToVisibilityConverter}}"/>
+
+                <Expander Grid.Row="2"
+                          Header="{Binding TxtFilter}"
+                          Visibility="{Binding ShowFilterBar, Converter={StaticResource BoolToVisibilityConverter}}"
+                          IsExpanded="{Binding IsFilterPanelExpanded}"
+                          Margin="0,10,0,0"
+                          Background="{DynamicResource SurfaceBrush}"
+                          BorderBrush="{DynamicResource BorderBrush}"
+                          BorderThickness="1">
+                    <Grid Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" Margin="0,0,8,0" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" ToolTip="{Binding TxtFilterTextTooltip}"/>
+                        <ComboBox Grid.Column="1" Margin="0,0,8,0" ItemsSource="{Binding FilterEmployeeOptions}" SelectedItem="{Binding FilterEmployee}" DisplayMemberPath="DisplayName"/>
+                        <ComboBox Grid.Column="2" Margin="0,0,8,0" ItemsSource="{Binding FilterTaskTypeOptions}" SelectedItem="{Binding FilterTaskType}"/>
+                        <Button Grid.Column="3" Content="{Binding TxtFilterReset}" Command="{Binding ClearFiltersCommand}" Style="{StaticResource SecondaryButtonStyle}"/>
+                    </Grid>
+                </Expander>
+            </Grid>
+        </Border>
+        
+        <!-- Zeile 1: Vorlagen (links, resizable) + Plan (rechts) -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="LeftPanelColumn" Width="200" MinWidth="140" MaxWidth="720"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- Standard-Aufgaben (Drag auf Plan, Breite per Splitter änderbar) -->
+            <Border Grid.Column="0" Background="{DynamicResource SurfaceBrush}" CornerRadius="12" 
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Margin="0,0,2,0" Padding="10">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.08" Color="Black"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*" MinHeight="80"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="{Binding TxtStandardTasks}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" 
+                               FontSize="13" Margin="0,0,0,8"/>
+                    <TextBlock Grid.Row="1" Text="{Binding TxtTemplateHint}" 
+                               Foreground="{DynamicResource TextPrimaryBrush}" Opacity="0.9" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                    <ListBox Grid.Row="2" x:Name="DefaultTasksList" ItemsSource="{Binding DefaultTasks}" 
+                             SelectionMode="Extended"
+                             SelectionChanged="DefaultTasksList_SelectionChanged"
+                             BorderThickness="0" Background="Transparent" Padding="0"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             ScrollViewer.CanContentScroll="False"
+                             VerticalAlignment="Stretch">
+                        <ListBox.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,10,0,8">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+                                            <Border Grid.Row="0" Height="2" CornerRadius="1" Margin="0,0,0,6"
+                                                    Background="{DynamicResource PrimaryBrush}"/>
+                                            <TextBlock Grid.Row="1"
+                                                       Text="{Binding Name, Converter={StaticResource FavoriteGroupHeaderConverter}}"
+                                                       FontWeight="SemiBold" FontSize="11"
+                                                       Foreground="{DynamicResource TextSecondaryBrush}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                            </GroupStyle>
+                        </ListBox.GroupStyle>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Margin" Value="0,0,0,2"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border x:Name="Sel"
+                                                    Background="Transparent"
+                                                    BorderThickness="2"
+                                                    BorderBrush="Transparent"
+                                                    CornerRadius="8"
+                                                    Padding="2"
+                                                    SnapsToDevicePixels="True">
+                                                <ContentPresenter/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="Sel" Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+                                                    <Setter TargetName="Sel" Property="Background" Value="{DynamicResource AccentLightBrush}"/>
+                                                </Trigger>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Sel" Property="BorderBrush" Value="{DynamicResource PrimaryBrush}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{Binding Color, Converter={StaticResource TaskColorConverter}}" 
+                                        CornerRadius="6" Padding="4,4,8,4" Margin="0" Cursor="Hand"
+                                        PreviewMouseLeftButtonDown="TemplateItem_PreviewMouseLeftButtonDown"
+                                        MouseMove="TemplateItem_MouseMove"
+                                        PreviewMouseLeftButtonUp="TemplateItem_PreviewMouseLeftButtonUp">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button x:Name="FavoriteToggleButton" Grid.Column="0"
+                                                Command="{Binding DataContext.ToggleTemplateFavoriteCommand, RelativeSource={RelativeSource AncestorType=ListBox}}"
+                                                CommandParameter="{Binding}"
+                                                ToolTip="Favorit (oben anzeigen)"
+                                                Background="Transparent" BorderThickness="0"
+                                                Padding="4,0" MinWidth="22" Cursor="Hand"
+                                                VerticalAlignment="Top"
+                                                Click="FavoriteToggleButton_Click">
+                                            <TextBlock FontSize="13" Foreground="{DynamicResource TaskChipTextBrush}">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="☆"/>
+                                                        <Setter Property="Opacity" Value="0.55"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                                                                <Setter Property="Text" Value="★"/>
+                                                                <Setter Property="Opacity" Value="1"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Button>
+                                        <TextBlock Grid.Column="1" Text="{Binding Description}" FontSize="12"
+                                                   Foreground="{DynamicResource TaskChipTextBrush}" FontWeight="SemiBold"
+                                                   TextWrapping="Wrap" VerticalAlignment="Center" Margin="2,2,0,2"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0,10,0,0" HorizontalAlignment="Left">
+                        <Button Content="{Binding TxtTemplateAdd}" Command="{Binding AddTemplateCommand}" Margin="0,0,0,6" 
+                                HorizontalAlignment="Left" HorizontalContentAlignment="Center"
+                                Style="{StaticResource PrimaryButtonStyle}" Padding="8,6" FontSize="12" MinWidth="0"/>
+                        <Button Content="{Binding TxtTemplateEdit}" Command="{Binding EditTemplateCommand}" Margin="0,0,0,6" 
+                                HorizontalAlignment="Left" HorizontalContentAlignment="Center"
+                                Style="{StaticResource SecondaryButtonStyle}" Padding="8,6" FontSize="12" MinWidth="0"/>
+                        <Button Content="{Binding TxtTemplateDelete}" Command="{Binding DeleteTemplateCommand}" Margin="0,0,0,0" 
+                                HorizontalAlignment="Left" HorizontalContentAlignment="Center"
+                                Style="{StaticResource SecondaryButtonStyle}" Padding="8,6" FontSize="12" MinWidth="0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            
+            <GridSplitter x:Name="TemplatePanelSplitter" Grid.Column="1"
+                          Width="10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                          ResizeBehavior="PreviousAndNext" ResizeDirection="Columns"
+                          Background="{DynamicResource PrimaryBrush}" Opacity="0.55"
+                          Cursor="SizeWE" ShowsPreview="False"
+                          ToolTip="{Binding TxtTemplatePanelResizeTooltip}"
+                          DragCompleted="TemplatePanelSplitter_DragCompleted"/>
+            
+            <!-- Wochenplan-Tabelle in Karte -->
+            <Border Grid.Column="2" Background="{DynamicResource SurfaceBrush}" CornerRadius="12" 
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                    Padding="0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.08" Color="Black"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid x:Name="HeaderHost" Grid.Row="0" ClipToBounds="True" Background="{DynamicResource HeaderBrush}">
+                        <Grid x:Name="HeaderGrid" HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,1" Padding="12">
+                                <TextBlock Text="{Binding TxtEmployeeColumn}" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}"/>
+                            </Border>
+                        </Grid>
+                    </Grid>
+                    <ScrollViewer x:Name="ScheduleScrollViewer" Grid.Row="1"
+                                  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                                  PreviewMouseLeftButtonDown="ScheduleScrollViewer_PreviewMouseLeftButtonDown">
+                        <Grid x:Name="ScheduleGrid" Margin="0" HorizontalAlignment="Stretch"/>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
